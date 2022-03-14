@@ -7,25 +7,26 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.rajesh.mvvmarchitecture.data.remote.dto.CoinDto
 import com.rajesh.mvvmarchitecture.databinding.ItemCoinListBinding
+import com.rajesh.mvvmarchitecture.domain.model.Coin
 import javax.inject.Inject
 
 class CoinAdapter @Inject constructor() : RecyclerView.Adapter<CoinAdapter.CoinViewHolder>(){
 
     class CoinViewHolder(val coinListBinding: ItemCoinListBinding) : RecyclerView.ViewHolder(coinListBinding.root)
 
-    private val diffCallback = object : DiffUtil.ItemCallback<CoinDto>() {
-        override fun areItemsTheSame(oldItem: CoinDto, newItem: CoinDto): Boolean {
+    private val diffCallback = object : DiffUtil.ItemCallback<Coin>() {
+        override fun areItemsTheSame(oldItem: Coin, newItem: Coin): Boolean {
             return oldItem == newItem
         }
 
-        override fun areContentsTheSame(oldItem: CoinDto, newItem: CoinDto): Boolean {
+        override fun areContentsTheSame(oldItem: Coin, newItem: Coin): Boolean {
             return oldItem == newItem
         }
     }
 
     private val differ = AsyncListDiffer(this, diffCallback)
 
-    var coins: List<CoinDto>
+    var coins: List<Coin>
         get() = differ.currentList
         set(value) = differ.submitList(value)
 

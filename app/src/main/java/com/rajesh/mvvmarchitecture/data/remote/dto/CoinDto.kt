@@ -12,7 +12,6 @@ data class CoinDto(
     val type: String
 )
 
-/*
 fun CoinDto.toCoin() : Coin {
 
     return Coin(
@@ -22,4 +21,4 @@ fun CoinDto.toCoin() : Coin {
         rank = rank,
         symbol = symbol
     )
-}*/
+}

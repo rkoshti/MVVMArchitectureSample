@@ -1,6 +1,7 @@
 package com.rajesh.mvvmarchitecture.ui
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
@@ -62,7 +63,7 @@ class ListFragment @Inject constructor(
                     is Resource.Success -> {
                         binding.rvList.visibility = View.VISIBLE
                         val listOfCoins = result.data
-                        //  Log.e(ListFragment::class.java.name, "Response >>> $listOfCoins")
+                          Log.e(ListFragment::class.java.name, "Response >>> $listOfCoins")
                         if (listOfCoins != null) {
                             coinListAdapter.coins = listOfCoins
                         }
