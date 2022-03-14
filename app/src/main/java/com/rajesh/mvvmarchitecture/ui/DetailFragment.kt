@@ -8,16 +8,15 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.snackbar.Snackbar
 import com.rajesh.mvvmarchitecture.R
-import com.rajesh.mvvmarchitecture.common.Status
+import com.rajesh.mvvmarchitecture.common.Resource
 import com.rajesh.mvvmarchitecture.databinding.FragmentDetailBinding
-import com.rajesh.mvvmarchitecture.databinding.FragmentListBinding
 import com.rajesh.mvvmarchitecture.domain.viewmodels.CoinViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class DetailFragment @Inject constructor():  Fragment(R.layout.fragment_detail) {
+class DetailFragment @Inject constructor() : Fragment(R.layout.fragment_detail) {
 
     lateinit var binding: FragmentDetailBinding
     private val viewModel: CoinViewModel by viewModels()
@@ -29,7 +28,7 @@ class DetailFragment @Inject constructor():  Fragment(R.layout.fragment_detail) 
         val coinId = arguments?.getString("coinId").toString()
         setUpObservers()
 
-        lifecycleScope.launch{
+        lifecycleScope.launch {
             viewModel.coinDetailById(coinId)
         }
     }
@@ -39,15 +38,8 @@ class DetailFragment @Inject constructor():  Fragment(R.layout.fragment_detail) 
         viewModel.coinDetail.observe(viewLifecycleOwner) {
             it?.getContentIfNotHandled()?.let { result ->
 
-                when (result.status) {
-                    Status.SUCCESS -> {
-                        val response = result.data
-                        Log.e(ListFragment::class.java.name, "Response >>> $response")
-
-                        binding.tvDetail.text = response?.description
-                        binding.progressBar.visibility = View.GONE
-                    }
-                    Status.ERROR -> {
+                when (result) {
+                    is Resource.Error -> {
                         Snackbar.make(
                             binding.rootLayout,
                             result.message ?: "An unknown error occurred.",
@@ -55,8 +47,15 @@ class DetailFragment @Inject constructor():  Fragment(R.layout.fragment_detail) 
                         ).show()
                         binding.progressBar.visibility = View.GONE
                     }
-                    Status.LOADING -> {
+                    is Resource.Loading -> {
                         binding.progressBar.visibility = View.VISIBLE
+                    }
+                    is Resource.Success -> {
+                        val response = result.data
+                        Log.e(ListFragment::class.java.name, "Response >>> $response")
+
+                        binding.tvDetail.text = response?.description
+                        binding.progressBar.visibility = View.GONE
                     }
                 }
             }

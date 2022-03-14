@@ -26,7 +26,7 @@ class CoinViewModel @Inject constructor(
     val coinDetail : LiveData<Event<Resource<CoinDetailDto>>> = _getCoinById
 
     fun getAllCoins() {
-        _allCoins.value = Event(Resource.loading(null))
+        _allCoins.value = Event(Resource.Loading(null))
         viewModelScope.launch {
             val response = repository.getCoins()
             _allCoins.value = Event(response)
@@ -37,12 +37,11 @@ class CoinViewModel @Inject constructor(
         if(coinId.isEmpty()) {
             return
         }
-        _getCoinById.value = Event(Resource.loading(null))
+        _getCoinById.value = Event(Resource.Loading(null))
         viewModelScope.launch {
             val response = repository.getCoinsById(coinId)
             _getCoinById.value = Event(response)
         }
     }
-
 
 }

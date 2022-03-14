@@ -17,14 +17,14 @@ class CoinRepositoryImpl @Inject constructor(
             val response = api.getCoins()
             if(response.isSuccessful) {
                 response.body()?.let {
-                    return@let Resource.success(it)
-                } ?: Resource.error("An unknown error occured", null)
+                    return@let Resource.Success(it)
+                } ?: Resource.Error("An unknown error occured", null)
             } else {
-                Resource.error("An unknown error occured", null)
+                Resource.Error("An unknown error occured", null)
             }
         } catch(e: Exception) {
             Log.e("EXCEPTION", "EXCEPTION:", e)
-            Resource.error("Couldn't reach the server. Check your internet connection", null)
+            Resource.Error("Couldn't reach the server. Check your internet connection", null)
         }
     }
 
@@ -33,14 +33,14 @@ class CoinRepositoryImpl @Inject constructor(
             val response = api.getCoinById(coinId)
             if(response.isSuccessful) {
                 response.body()?.let {
-                    return@let Resource.success(it)
-                } ?: Resource.error("An unknown error occured", null)
+                    return@let Resource.Success(it)
+                } ?: Resource.Error("An unknown error occured", null)
             } else {
-                Resource.error("An unknown error occured", null)
+                Resource.Error("An unknown error occured", null)
             }
         } catch(e: Exception) {
             Log.e("EXCEPTION", "EXCEPTION:", e)
-            Resource.error("Couldn't reach the server. Check your internet connection", null)
+            Resource.Error("Couldn't reach the server. Check your internet connection", null)
         }
     }
 }

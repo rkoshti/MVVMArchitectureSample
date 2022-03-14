@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import com.rajesh.mvvmarchitecture.R
 import com.rajesh.mvvmarchitecture.adapter.CoinAdapter
-import com.rajesh.mvvmarchitecture.common.Status
+import com.rajesh.mvvmarchitecture.common.Resource
 import com.rajesh.mvvmarchitecture.databinding.FragmentListBinding
 import com.rajesh.mvvmarchitecture.domain.viewmodels.CoinViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -38,7 +38,7 @@ class ListFragment @Inject constructor(
 
         coinListAdapter.setOnItemClickLister {
             val bundle = bundleOf("coinId" to it)
-           //findNavController().navigate(ListFragmentDirections.actionListFragmentToDetailFragment())
+            //findNavController().navigate(ListFragmentDirections.actionListFragmentToDetailFragment())
             findNavController().navigate(R.id.action_listFragment_to_detailFragment, bundle)
         }
     }
@@ -46,17 +46,8 @@ class ListFragment @Inject constructor(
     private fun subscribeToObservers() {
         viewModel.allCoins.observe(viewLifecycleOwner) {
             it?.getContentIfNotHandled()?.let { result ->
-                when (result.status) {
-                    Status.SUCCESS -> {
-                        binding.rvList.visibility = View.VISIBLE
-                        val listOfCoins = result.data
-                      //  Log.e(ListFragment::class.java.name, "Response >>> $listOfCoins")
-                        if (listOfCoins != null) {
-                            coinListAdapter.coins = listOfCoins
-                        }
-                        binding.progressBar.visibility = View.GONE
-                    }
-                    Status.ERROR -> {
+                when (result) {
+                    is Resource.Error -> {
                         Snackbar.make(
                             binding.rootLayout,
                             result.message ?: "An unknown error occurred.",
@@ -64,9 +55,18 @@ class ListFragment @Inject constructor(
                         ).show()
                         binding.progressBar.visibility = View.GONE
                     }
-                    Status.LOADING -> {
+                    is Resource.Loading -> {
                         binding.rvList.visibility = View.GONE
                         binding.progressBar.visibility = View.VISIBLE
+                    }
+                    is Resource.Success -> {
+                        binding.rvList.visibility = View.VISIBLE
+                        val listOfCoins = result.data
+                        //  Log.e(ListFragment::class.java.name, "Response >>> $listOfCoins")
+                        if (listOfCoins != null) {
+                            coinListAdapter.coins = listOfCoins
+                        }
+                        binding.progressBar.visibility = View.GONE
                     }
                 }
             }
