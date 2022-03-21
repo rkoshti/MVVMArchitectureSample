@@ -1,7 +1,9 @@
 package com.rajesh.mvvmarchitecture.data.remote.dto
 
 import com.rajesh.mvvmarchitecture.domain.model.Coin
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class CoinDto(
     val id: String,
     val is_active: Boolean,

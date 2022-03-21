@@ -1,8 +1,9 @@
 package com.rajesh.mvvmarchitecture.domain.model
 
 import com.rajesh.mvvmarchitecture.data.remote.dto.Team
+import kotlinx.serialization.Serializable
 
-
+@Serializable
 data class CoinDetail(
     val description: String,
     val coinId: String,

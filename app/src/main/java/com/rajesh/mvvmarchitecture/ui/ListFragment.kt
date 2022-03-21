@@ -10,10 +10,15 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
+import com.google.gson.Gson
 import com.rajesh.mvvmarchitecture.R
 import com.rajesh.mvvmarchitecture.adapter.CoinAdapter
+import com.rajesh.mvvmarchitecture.common.Constant
+import com.rajesh.mvvmarchitecture.common.Constant.PARAM_COIN_ID
+import com.rajesh.mvvmarchitecture.common.DataStoreManager
 import com.rajesh.mvvmarchitecture.common.Resource
 import com.rajesh.mvvmarchitecture.databinding.FragmentListBinding
+import com.rajesh.mvvmarchitecture.domain.model.Coin
 import com.rajesh.mvvmarchitecture.domain.viewmodels.CoinViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -27,6 +32,12 @@ class ListFragment @Inject constructor(
     private val viewModel: CoinViewModel by viewModels()
     private lateinit var binding: FragmentListBinding
 
+    @Inject
+    lateinit var dataStoreManager: DataStoreManager
+
+    @Inject lateinit var gson: Gson
+
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentListBinding.bind(view)
@@ -38,11 +49,34 @@ class ListFragment @Inject constructor(
         }
 
         coinListAdapter.setOnItemClickLister {
-            val bundle = bundleOf("coinId" to it)
+
+            val coin = Coin(it,true,"Rajesh bit coin",5,"raj-bitcoin")
+           // storeAndReadDataFromDataStore(gson.toJson(coin))
+            val bundle = bundleOf("coinId" to coin)
             //findNavController().navigate(ListFragmentDirections.actionListFragmentToDetailFragment())
             findNavController().navigate(R.id.action_listFragment_to_detailFragment, bundle)
         }
     }
+
+    /**
+     * Function for read and save data in data store
+     */
+    private fun storeAndReadDataFromDataStore(value: String) {
+        lifecycleScope.launch {
+            dataStoreManager.putString(PARAM_COIN_ID, value)
+            val coin = gson.fromJson(dataStoreManager.getString(PARAM_COIN_ID),Coin::class.java)
+            Log.e(ListFragment::class.java.name, "Preference Value is >>>>>  ${gson.toJson(coin)}")
+        }
+    }
+
+    /* Flow collect example of data store
+    private fun setupUI() {
+        lifecycleScope.launch {
+            dataStoreManager.themeMode.collectIn(this@MainActivity) { mode ->
+                setNightMode(mode)
+            }
+        }
+    }*/
 
     private fun subscribeToObservers() {
         viewModel.allCoins.observe(viewLifecycleOwner) {
@@ -63,7 +97,7 @@ class ListFragment @Inject constructor(
                     is Resource.Success -> {
                         binding.rvList.visibility = View.VISIBLE
                         val listOfCoins = result.data
-                          Log.e(ListFragment::class.java.name, "Response >>> $listOfCoins")
+                          Log.e(ListFragment::class.java.name, "Response >>> ${gson.toJson(listOfCoins)}")
                         if (listOfCoins != null) {
                             coinListAdapter.coins = listOfCoins
                         }
